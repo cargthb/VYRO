@@ -62,6 +62,8 @@ const startPageController = new StartPageController({
     gameContainer.classList.remove('hidden');
     gameContainer.classList.add('visible');
     gameContainer.setAttribute('aria-hidden', 'false');
+    gameEngine.resizeCanvas();
+    requestAnimationFrame(() => gameEngine.resizeCanvas());
     gameEngine.start();
   },
 });

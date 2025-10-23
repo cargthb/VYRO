@@ -22,6 +22,14 @@ export class Entity {
     this.ceilingHanging = false;
     this.animationState = 'idle';
     this.remove = false;
+    this.previousPosition = this.position.clone();
+  }
+
+  /**
+   * Stores the current world position for subsequent collision resolution.
+   */
+  storePreviousPosition() {
+    this.previousPosition.set(this.position.x, this.position.y);
   }
 
   /**

@@ -29,70 +29,92 @@ export class TileMap {
 
   /**
    * Resolves collision for an entity.
+   * @param {import('../entities/entity.js').Entity} entity
+   * @param {number} delta
+   * @returns {{ grounded: boolean, surface: SURFACE_TYPES }}
+   */
+  resolveEntityCollision(entity, delta = 1) {
+    const frameScalar = 0.016 * delta;
+    const halfWidth = entity.hitbox.width / 2;
+    const halfHeight = entity.hitbox.height;
+
+    const prevX = entity.previousPosition?.x ?? entity.position.x;
+    const prevY = entity.previousPosition?.y ?? entity.position.y;
+    const targetX = entity.position.x + entity.velocity.x * frameScalar;
+    const targetY = entity.position.y + entity.velocity.y * frameScalar;
+
+    let resolvedX = targetX;
+    let resolvedY = targetY;
+    let grounded = false;
+    let surface = null;
+
+    if (targetX > prevX) {
+      const right = Math.floor(targetX + halfWidth);
+      const top = Math.floor(prevY - halfHeight + 0.1);
+      const bottom = Math.floor(prevY + 0.05);
+      if (this.getTile(right, bottom).solid || this.getTile(right, top).solid) {
+        resolvedX = right - halfWidth - 0.01;
+        entity.velocity.x = 0;
+      }
+    } else if (targetX < prevX) {
+      const left = Math.floor(targetX - halfWidth);
+      const top = Math.floor(prevY - halfHeight + 0.1);
+      const bottom = Math.floor(prevY + 0.05);
+      if (this.getTile(left, bottom).solid || this.getTile(left, top).solid) {
+        resolvedX = left + 1 + halfWidth + 0.01;
+        entity.velocity.x = 0;
+      }
+    }
+
+    const currentX = clamp(resolvedX, -Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER);
+    const nextBottom = Math.floor(targetY + 0.1);
+    const nextTop = Math.floor(targetY - halfHeight);
+    const sampleLeft = Math.floor(currentX - halfWidth + 0.05);
+    const sampleRight = Math.floor(currentX + halfWidth - 0.05);
+
+    if (targetY > prevY) {
+      const belowLeft = this.getTile(sampleLeft, nextBottom);
+      const belowRight = this.getTile(sampleRight, nextBottom);
+      if (belowLeft.solid || belowRight.solid) {
+        resolvedY = nextBottom - 0.01;
+        entity.velocity.y = 0;
+        grounded = true;
+        surface = belowLeft.surface || belowRight.surface || SURFACE_TYPES.NORMAL;
+      }
+    } else if (targetY < prevY) {
+      const aboveLeft = this.getTile(sampleLeft, nextTop);
+      const aboveRight = this.getTile(sampleRight, nextTop);
+      if (aboveLeft.solid || aboveRight.solid) {
+        resolvedY = nextTop + 1 + halfHeight + 0.01;
+        entity.velocity.y = Math.max(0, entity.velocity.y);
+      }
+    }
+
+    entity.position.x = resolvedX;
+    entity.position.y = resolvedY;
+    return { grounded, surface };
+  }
+
+  /**
+   * Resolves collision for the player and applies ground state feedback.
    * @param {import('../entities/player.js').Player} player
+   * @param {number} delta
    */
   resolvePlayerCollision(player, delta = 1) {
-    const frameScalar = 0.016 * delta;
-    const nextX = player.position.x + player.velocity.x * frameScalar;
-    const nextY = player.position.y + player.velocity.y * frameScalar;
+    const result = this.resolveEntityCollision(player, delta);
+    const surface = result.surface ?? player.surface ?? SURFACE_TYPES.NORMAL;
+    player.setGrounded(result.grounded, surface);
+  }
 
-    const halfWidth = player.hitbox.width / 2;
-    const halfHeight = player.hitbox.height;
-
-    let grounded = false;
-    let surface = SURFACE_TYPES.NORMAL;
-
-    // Horizontal collision
-    const left = Math.floor(nextX - halfWidth);
-    const right = Math.floor(nextX + halfWidth);
-    const bottom = Math.floor(player.position.y + 0.05);
-    const top = Math.floor(player.position.y - halfHeight + 1);
-
-    if (player.velocity.x > 0) {
-      if (this.getTile(right, bottom).solid || this.getTile(right, top).solid) {
-        player.velocity.x = 0;
-        player.position.x = right - halfWidth - 0.01;
-      } else {
-        player.position.x = nextX;
-      }
-    } else if (player.velocity.x < 0) {
-      if (this.getTile(left, bottom).solid || this.getTile(left, top).solid) {
-        player.velocity.x = 0;
-        player.position.x = left + 1 + halfWidth + 0.01;
-      } else {
-        player.position.x = nextX;
-      }
-    } else {
-      player.position.x = nextX;
-    }
-
-    const nextBottom = Math.floor(nextY + 0.1);
-    const nextTop = Math.floor(nextY - halfHeight);
-
-    if (player.velocity.y > 0) {
-      const solidBelowLeft = this.getTile(Math.floor(player.position.x - halfWidth), nextBottom);
-      const solidBelowRight = this.getTile(Math.floor(player.position.x + halfWidth), nextBottom);
-      if (solidBelowLeft.solid || solidBelowRight.solid) {
-        player.velocity.y = 0;
-        player.position.y = nextBottom - 0.01;
-        grounded = true;
-        surface = solidBelowLeft.surface || solidBelowRight.surface || SURFACE_TYPES.NORMAL;
-      } else {
-        player.position.y = nextY;
-      }
-    } else if (player.velocity.y < 0) {
-      const solidAboveLeft = this.getTile(Math.floor(player.position.x - halfWidth), nextTop);
-      const solidAboveRight = this.getTile(Math.floor(player.position.x + halfWidth), nextTop);
-      if (solidAboveLeft.solid || solidAboveRight.solid) {
-        player.velocity.y = clamp(player.velocity.y, 0, player.velocity.y);
-      } else {
-        player.position.y = nextY;
-      }
-    } else {
-      player.position.y = nextY;
-    }
-
-    player.setGrounded(grounded, surface);
+  /**
+   * Returns hazard type at world position if any.
+   * @param {number} x
+   * @param {number} y
+   * @returns {string | null}
+   */
+  getHazard(x, y) {
+    const tile = this.getTile(Math.floor(x), Math.floor(y + 0.05));
+    return tile.hazard ?? null;
   }
 
   /**

@@ -10,6 +10,7 @@
  * @property {boolean} slidePressed
  * @property {boolean} run
  * @property {boolean} crouch
+ * @property {boolean} resetPressed
  * @property {number} aimX
  * @property {number} aimY
  */
@@ -50,6 +51,7 @@ export class InputManager {
     this.state.attackPressed = false;
     this.state.dashPressed = false;
     this.state.slidePressed = false;
+    this.state.resetPressed = false;
   }
 
   /**
@@ -81,6 +83,9 @@ export class InputManager {
     }
     if (this.consumePress('KeyS') || this.consumePress('ArrowDown')) {
       this.state.slidePressed = true;
+    }
+    if (this.consumePress('KeyR')) {
+      this.state.resetPressed = true;
     }
   }
 
@@ -157,6 +162,7 @@ export class InputManager {
       slidePressed: false,
       run: false,
       crouch: false,
+      resetPressed: false,
       aimX: 0,
       aimY: 0,
     };

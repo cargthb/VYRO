@@ -78,6 +78,44 @@ export class Player extends Entity {
   }
 
   /**
+   * Resets the player to a spawn position.
+   * @param {{ x: number, y: number }} spawn
+   * @param {{ full?: boolean }} [options]
+   */
+  reset(spawn, options = {}) {
+    const { full = false } = options;
+    this.position.set(spawn.x, spawn.y);
+    this.previousPosition.set(spawn.x, spawn.y);
+    this.velocity.set(0, 0);
+    this.acceleration.set(0, 0);
+    this.grounded = false;
+    this.wallSliding = false;
+    this.ledgeGrabbing = false;
+    this.ceilingHanging = false;
+    this.animationState = 'idle';
+    this.surface = SURFACE_TYPES.NORMAL;
+    this.availableJumps = 1 + (this.abilities.has(PLAYER_ABILITIES.DOUBLE_JUMP) ? 1 : 0);
+    this.airDashesAvailable = this.abilities.has(PLAYER_ABILITIES.AIR_DASH) ? 1 : 0;
+    this.coyoteTimer = 0;
+    this.jumpBuffer = 0;
+    this.jumpHoldFrames = 0;
+    this.dashTimer = 0;
+    this.dashCooldown = 0;
+    this.slideCooldown = 0;
+    this.isSliding = false;
+    this.isCharging = false;
+    this.chargeTime = 0;
+    this.comboTracker.sequence = 0;
+    this.comboTracker.timer = 0;
+    this.motionTrail = [];
+    if (full) {
+      this.health = this.maxHealth;
+      this.energy = this.maxEnergy;
+      this.statusEffects.clear();
+    }
+  }
+
+  /**
    * Applies timed status effects, removing expired entries.
    */
   updateStatuses() {
@@ -512,6 +550,7 @@ export class Player extends Entity {
    * @param {{input: import('../input.js').InputState, delta: number, surface: SURFACE_TYPES}} context
    */
   update(context) {
+    this.storePreviousPosition();
     this.updateStatuses();
     this.applyStatusModifiers();
     this.recoverResources();
