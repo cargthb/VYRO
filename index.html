@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VYRO</title>
+  <link rel="stylesheet" href="styles/base.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="app" class="app-root">
+    <div id="backgroundCanvasContainer" class="background-canvas-container">
+      <canvas id="backgroundCanvas"></canvas>
+    </div>
+    <main id="startPage" class="start-page" aria-label="VYRO start page">
+      <header class="start-header">
+        <canvas id="titleCanvas" class="title-canvas" aria-hidden="true"></canvas>
+        <h1 id="gameTitle" class="game-title" aria-live="polite">VYRO</h1>
+        <p class="game-subtitle">Adaptive strategy awaits.</p>
+      </header>
+      <section class="start-controls" role="navigation">
+        <button id="playButton" class="primary-button" data-tooltip="Begin your adventure">Play</button>
+        <button id="settingsButton" class="secondary-button icon-button" data-tooltip="Adjust preferences" aria-haspopup="dialog">
+          <span class="icon">⚙</span>
+          <span class="label">Settings</span>
+        </button>
+        <button id="themesButton" class="secondary-button icon-button" data-tooltip="Choose your theme" aria-haspopup="dialog">
+          <span class="icon">🎨</span>
+          <span class="label">Themes</span>
+        </button>
+        <button id="creditsButton" class="secondary-button icon-button" data-tooltip="Credits" aria-haspopup="dialog">
+          <span class="icon">ℹ</span>
+          <span class="label">Credits</span>
+        </button>
+        <button id="quitButton" class="danger-button" data-tooltip="Exit the game">Quit</button>
+      </section>
+      <section class="start-footer">
+        <button id="soundToggle" class="secondary-button sound-toggle" aria-pressed="false" data-tooltip="Toggle sound">
+          <span class="icon">🔊</span>
+          <span class="label">Sound On</span>
+        </button>
+        <div class="credit-callout">Created by CR</div>
+      </section>
+    </main>
+    <section id="settingsPanel" class="settings-panel hidden" aria-hidden="true">
+      <div class="settings-header">
+        <div class="breadcrumb" id="breadcrumbTrail" aria-live="polite"></div>
+        <button id="settingsBack" class="secondary-button back-button" data-tooltip="Back to main menu">Back</button>
+      </div>
+      <div class="settings-body">
+        <nav class="settings-nav" role="tablist" aria-orientation="vertical">
+          <button class="settings-tab" data-tab="audio" role="tab" aria-controls="audioSettings">Audio</button>
+          <button class="settings-tab" data-tab="display" role="tab" aria-controls="displaySettings">Display</button>
+          <button class="settings-tab" data-tab="gameplay" role="tab" aria-controls="gameplaySettings">Gameplay</button>
+          <button class="settings-tab" data-tab="accessibility" role="tab" aria-controls="accessibilitySettings">Accessibility</button>
+        </nav>
+        <div class="settings-content" id="settingsContent" role="tabpanel"></div>
+      </div>
+      <footer class="settings-footer">
+        <div class="settings-status" id="settingsStatus" role="status" aria-live="polite"></div>
+        <div class="settings-actions">
+          <button id="cancelSettings" class="secondary-button">Cancel</button>
+          <button id="resetSettings" class="secondary-button" data-tooltip="Restore defaults">Reset</button>
+          <button id="applySettings" class="primary-button">Apply</button>
+        </div>
+      </footer>
+    </section>
+  </div>
+
+  <div id="modalRoot" class="modal-root" aria-live="assertive"></div>
+  <div id="toastRoot" class="toast-root" aria-live="polite"></div>
+
+  <div id="loadingIndicator" class="loading-indicator hidden" role="alert" aria-hidden="true">
+    <div class="spinner"></div>
+    <p>Applying settings...</p>
+  </div>
+
+  <script type="module" src="src/app.js"></script>
+</body>
+</html>
