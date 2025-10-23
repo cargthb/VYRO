@@ -167,16 +167,38 @@ export class GameEngine {
     const levelKey = this.levelOrder[this.currentLevelIndex];
     const levelMeta = PREBUILT_LEVELS[levelKey];
     const elapsed = ((performance.now() - this.levelStartTime) / 1000).toFixed(1);
-    this.overlay.querySelector('[data-stat="health"]').textContent = `${Math.round(this.player.health)} / ${this.player.maxHealth}`;
-    this.overlay.querySelector('[data-stat="energy"]').textContent = `${Math.round(this.player.energy)} / ${this.player.maxEnergy}`;
-    this.overlay.querySelector('[data-stat="world"]').textContent = `${worldInfo.name} – ${levelMeta?.name ?? 'Training'}`;
-    this.overlay.querySelector('[data-stat="position"]').textContent = `X ${this.player.position.x.toFixed(1)} | Y ${this.player.position.y.toFixed(1)}`;
-    this.overlay.querySelector('[data-stat="timer"]').textContent = `${elapsed}s`;
-    this.overlay.querySelector('[data-stat="collectibles"]').textContent = `${this.levelStats.collected} / ${this.levelStats.totalCollectibles}`;
+    const healthStat = this.overlay.querySelector('[data-stat="health"]');
+    const energyStat = this.overlay.querySelector('[data-stat="energy"]');
+    const worldStat = this.overlay.querySelector('[data-stat="world"]');
+    const positionStat = this.overlay.querySelector('[data-stat="position"]');
+    const timerStat = this.overlay.querySelector('[data-stat="timer"]');
+    const collectibleStat = this.overlay.querySelector('[data-stat="collectibles"]');
+
+    if (healthStat) {
+      healthStat.textContent = `${Math.round(this.player.health)} / ${this.player.maxHealth}`;
+    }
+    if (energyStat) {
+      energyStat.textContent = `${Math.round(this.player.energy)} / ${this.player.maxEnergy}`;
+    }
+    if (worldStat) {
+      worldStat.textContent = `${worldInfo.name} – ${levelMeta?.name ?? 'Training'}`;
+    }
+    if (positionStat) {
+      positionStat.textContent = `X ${this.player.position.x.toFixed(1)} | Y ${this.player.position.y.toFixed(1)}`;
+    }
+    if (timerStat) {
+      timerStat.textContent = `${elapsed}s`;
+    }
+    if (collectibleStat) {
+      collectibleStat.textContent = `${this.levelStats.collected} / ${this.levelStats.totalCollectibles}`;
+    }
     const status = this.levelStats.totalCollectibles > 0
       ? `${levelMeta.objective} (${this.levelStats.collected}/${this.levelStats.totalCollectibles})`
       : levelMeta.objective;
-    this.overlay.querySelector('[data-stat="status"]').textContent = status;
+    const statusStat = this.overlay.querySelector('[data-stat="status"]');
+    if (statusStat) {
+      statusStat.textContent = status;
+    }
   }
 
   /**
@@ -485,7 +507,10 @@ export class GameEngine {
         this.loadLevel(this.levelOrder[this.currentLevelIndex], { full: false });
       } else {
         this.runCompleted = true;
-        this.overlay?.querySelector('[data-stat="status"]').textContent = 'Victory! Press R to restart.';
+        const statusLabel = this.overlay ? this.overlay.querySelector('[data-stat="status"]') : null;
+        if (statusLabel) {
+          statusLabel.textContent = 'Victory! Press R to restart.';
+        }
         this.player.velocity.set(0, 0);
       }
     }
