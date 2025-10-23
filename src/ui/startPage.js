@@ -9,8 +9,8 @@ import { toggleVisibility } from '../utils.js';
 export class StartPageController {
   /**
    * Creates a start page controller handling navigation triggers.
-   * @param {{ onOpenSettings: () => void, onOpenThemes: () => void }} callbacks
-   */
+   * @param {{ onOpenSettings: () => void, onOpenThemes: () => void, onStartGame: () => void }} callbacks
+  */
   constructor(callbacks) {
     this.callbacks = callbacks;
     this.modalManager = new ModalManager();
@@ -32,7 +32,7 @@ export class StartPageController {
     const soundToggle = document.getElementById('soundToggle');
 
     play.addEventListener('click', () => {
-      this.toastManager.show('success', 'Gameplay systems arrive in phase two.');
+      this.callbacks.onStartGame();
     });
 
     settings.addEventListener('click', () => {

@@ -7,6 +7,7 @@ import { ThemeSelector } from './ui/themeSelector.js';
 import { TitleAnimator } from './ui/titleAnimation.js';
 import { ToastManager } from './ui/toasts.js';
 import { getThemeByKey } from './themes.js';
+import { GameEngine } from './game/game.js';
 
 const stateManager = new StateManager(loadState());
 const toastManager = new ToastManager();
@@ -46,9 +47,23 @@ const themeSelector = new ThemeSelector({
   },
 });
 
+const gameContainer = document.getElementById('gameContainer');
+const gameEngine = new GameEngine({
+  canvas: document.getElementById('gameplayCanvas'),
+  overlay: document.getElementById('gameHud'),
+  encyclopedia: document.getElementById('gameCodex'),
+});
+
 const startPageController = new StartPageController({
   onOpenSettings: () => settingsController.open(),
   onOpenThemes: () => themeSelector.open(),
+  onStartGame: () => {
+    startPageController.toggle(false);
+    gameContainer.classList.remove('hidden');
+    gameContainer.classList.add('visible');
+    gameContainer.setAttribute('aria-hidden', 'false');
+    gameEngine.start();
+  },
 });
 
 // Accessibility enhancements
@@ -73,4 +88,5 @@ window.vyro = {
   startPageController,
   settingsController,
   themeSelector,
+  gameEngine,
 };

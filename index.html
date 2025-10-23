@@ -44,6 +44,49 @@
         <div class="credit-callout">Created by CR</div>
       </section>
     </main>
+    <section id="gameContainer" class="game-container hidden" aria-label="VYRO gameplay" aria-hidden="true">
+      <div class="game-layout">
+        <canvas id="gameplayCanvas" class="gameplay-canvas" width="960" height="540" aria-label="Game playfield"></canvas>
+        <aside id="gameHud" class="game-hud" aria-live="polite">
+          <header class="hud-header">
+            <h2>Run Status</h2>
+            <p data-stat="world"></p>
+          </header>
+          <dl class="hud-stats">
+            <div>
+              <dt>Health</dt>
+              <dd data-stat="health">0 / 0</dd>
+            </div>
+            <div>
+              <dt>Energy</dt>
+              <dd data-stat="energy">0 / 0</dd>
+            </div>
+            <div>
+              <dt>Position</dt>
+              <dd data-stat="position">X 0 | Y 0</dd>
+            </div>
+            <div>
+              <dt>Status</dt>
+              <dd data-stat="status">Normal</dd>
+            </div>
+          </dl>
+        </aside>
+        <aside id="gameCodex" class="game-codex" aria-label="Game encyclopedia">
+          <header>
+            <h2>Codex</h2>
+            <p>Review enemy intel and world progression.</p>
+          </header>
+          <section>
+            <h3>Enemy Archive</h3>
+            <div class="codex-grid" data-encyclopedia="enemies"></div>
+          </section>
+          <section>
+            <h3>World Atlas</h3>
+            <div class="codex-grid" data-encyclopedia="worlds"></div>
+          </section>
+        </aside>
+      </div>
+    </section>
     <section id="settingsPanel" class="settings-panel hidden" aria-hidden="true">
       <div class="settings-header">
         <div class="breadcrumb" id="breadcrumbTrail" aria-live="polite"></div>
